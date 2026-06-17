@@ -14,7 +14,7 @@ export default function LedgerPage() {
       <p className="eyebrow text-teal mb-2">Ledger</p>
       <h1 className="font-display text-3xl text-ink mb-2">Committed decisions</h1>
       <p className="text-sm text-ink-2 mb-8">
-        Append-only record. Sample entries are labeled; yours join for this session.
+        Append-only record. Sample entries are labeled — yours join for this session.
       </p>
 
       <ul className="space-y-3">
