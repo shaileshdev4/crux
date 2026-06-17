@@ -34,7 +34,7 @@ export function AgreementView({ ledger }: { ledger: Decision[] }) {
           Overrides by domain
         </h3>
         <p className="text-sm text-ink-2 mb-5">
-          Where your judgment actually adds value.
+          Where your judgment actually adds value — overrides only.
         </p>
         <div className="space-y-4">
           {cats.length === 0 ? (
