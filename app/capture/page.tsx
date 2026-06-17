@@ -46,7 +46,27 @@ export default function CapturePage() {
       setStance(d.aiStance);
       setQuestion(d.question);
       setPhase("confirm");
-    } catch {
+
+      if (typeof pendo !== "undefined") {
+        pendo.track("decision_extraction_completed", {
+          extraction_source: data.source ?? "",
+          extraction_confidence: d.extractionConfidence,
+          conversation_length: text.length,
+          detected_ai_stance: d.aiStance,
+          detected_category: d.suggestedCategory,
+          suggested_confidence: d.suggestedConfidence,
+          option_count: d.options.length,
+          reason_count: d.reasons.length,
+          extraction_duration_ms: elapsed,
+        });
+      }
+    } catch (err) {
+      if (typeof pendo !== "undefined") {
+        pendo.track("decision_extraction_failed", {
+          conversation_length: text.length,
+          error_type: err instanceof Error ? err.name : "unknown",
+        });
+      }
       setPhase("input");
     }
   }
@@ -68,6 +88,20 @@ export default function CapturePage() {
       category,
       revisitAt,
     });
+
+    if (typeof pendo !== "undefined") {
+      pendo.track("decision_committed", {
+        category,
+        ai_stance: stance,
+        confidence,
+        revisit_days: revisitDays,
+        option_count: draft.options.length,
+        reason_count: draft.reasons.length,
+        extraction_source: source,
+        question_length: question.length,
+      });
+    }
+
     router.push("/ledger");
   }
 

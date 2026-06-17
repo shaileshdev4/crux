@@ -93,7 +93,22 @@ function LedgerEntry({
                   <button
                     key={o}
                     type="button"
-                    onClick={() => onResolve(o)}
+                    onClick={() => {
+                      if (typeof pendo !== "undefined") {
+                        pendo.track("decision_resolved", {
+                          outcome: o,
+                          ai_stance: d.aiStance,
+                          category: d.category,
+                          confidence: d.confidence,
+                          is_sample: !!d.isSample,
+                          days_since_committed: Math.floor(
+                            (Date.now() - new Date(d.committedAt).getTime()) /
+                              86_400_000,
+                          ),
+                        });
+                      }
+                      onResolve(o);
+                    }}
                     className="btn-ghost text-xs capitalize"
                   >
                     {o}

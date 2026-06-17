@@ -10,6 +10,8 @@ interface Insight {
   tone: "edge" | "blindspot" | "pattern";
 }
 
+const trackedInsightKeys = new Set<string>();
+
 export function InsightCards({ ledger }: { ledger: Decision[] }) {
   const [insights, setInsights] = useState<Insight[]>(() =>
     computeInsights(ledger),
@@ -21,7 +23,11 @@ export function InsightCards({ ledger }: { ledger: Decision[] }) {
     setInsights(base);
     setNarrated(false);
 
+    const resolvedCount = ledger.filter((d) => d.outcome !== null).length;
+    const dedupeKey = `${ledger.length}-${resolvedCount}`;
+
     let cancelled = false;
+    let didNarrate = false;
     (async () => {
       try {
         const res = await fetch("/api/narrate", {
@@ -38,9 +44,24 @@ export function InsightCards({ ledger }: { ledger: Decision[] }) {
         ) {
           setInsights(data.insights);
           setNarrated(true);
+          didNarrate = true;
         }
       } catch {
         /* keep computed fallback */
+      } finally {
+        if (!cancelled && !trackedInsightKeys.has(dedupeKey)) {
+          trackedInsightKeys.add(dedupeKey);
+          if (typeof pendo !== "undefined") {
+            pendo.track("insights_generated", {
+              insight_count: base.length,
+              narrated: didNarrate,
+              narration_source: didNarrate ? "llama" : "none",
+              insight_tones: base.map((i) => i.tone).join(","),
+              resolved_decision_count: resolvedCount,
+              total_decision_count: ledger.length,
+            });
+          }
+        }
       }
     })();
     return () => {
