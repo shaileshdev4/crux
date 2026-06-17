@@ -79,7 +79,7 @@ export default function CapturePage() {
       </h1>
       <p className="text-ink-2 text-sm mb-8">
         Paste the AI conversation. Crux pulls out the question, options, and
-        whether you overrode it.
+        whether you overrode it. Try an example below.
       </p>
 
       {phase === "input" && (
