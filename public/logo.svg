@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 32" fill="none">
+  <g transform="translate(5 5)">
+    <path
+      d="M11 20 L11 12 M11 12 L4 4 M11 12 L18 4"
+      stroke="#f4f2ed"
+      stroke-width="1.75"
+      stroke-linecap="round"
+    />
+    <circle cx="11" cy="12" r="2" fill="#3ecfba"/>
+    <circle cx="4" cy="4" r="1.6" fill="#e8956f"/>
+    <circle cx="18" cy="4" r="1.6" fill="#5c6575"/>
+  </g>
+  <text
+    x="36"
+    y="22"
+    fill="#f4f2ed"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="18"
+    font-weight="400"
+    letter-spacing="-0.02em"
+  >
+    Crux
+  </text>
+</svg>
