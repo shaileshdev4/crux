@@ -253,4 +253,12 @@ Assistant: Yes - your usage grew 40% but NRR is flat. A measured increase with g
 
 Me: Done. 20% from April 1, existing customers locked.`,
   },
+  {
+    title: "Strategy pivot",
+    text: `Me: We're deciding whether to open-source our core SDK before Series A.
+
+Assistant: I'd lean against open-sourcing before the raise. You lose pricing leverage with enterprise buyers.
+
+Me: Three competitors already leaked similar features. I'm going with open-source now - 72% confident.`,
+  },
 ];
