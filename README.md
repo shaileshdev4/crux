@@ -22,6 +22,10 @@ GROQ_EXTRACT_MODEL=llama-3.1-8b-instant
 
 Works without a key via heuristic fallbacks.
 
+## Tech
+
+Next.js 16, React 19, Tailwind v4, Groq (Llama 3.1 / 3.3).
+
 ## Routes
 
 | Route      | Purpose                            |
