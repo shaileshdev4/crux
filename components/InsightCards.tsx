@@ -10,6 +10,7 @@ import {
 } from "react-icons/hi2";
 import { Decision } from "@/lib/types";
 import { aiAgreement, byCategory, calibrationCurve } from "@/lib/analysis";
+import { trackPendoOnce } from "@/lib/pendo";
 import { IconSlot, iconSm } from "@/components/IconSlot";
 
 interface Insight {
@@ -36,7 +37,7 @@ export function InsightCards({ ledger }: { ledger: Decision[] }) {
     setNarrated(false);
 
     const resolvedCount = ledger.filter((d) => d.outcome !== null).length;
-    const dedupeKey = `${ledger.length}-${resolvedCount}`;
+    const dedupeKey = `insights-${ledger.length}-${resolvedCount}`;
 
     let cancelled = false;
     let didNarrate = false;
@@ -61,18 +62,15 @@ export function InsightCards({ ledger }: { ledger: Decision[] }) {
       } catch {
         /* keep computed fallback */
       } finally {
-        if (!cancelled && !trackedInsightKeys.has(dedupeKey)) {
-          trackedInsightKeys.add(dedupeKey);
-          if (typeof pendo !== "undefined") {
-            pendo.track("insights_generated", {
-              insight_count: base.length,
-              narrated: didNarrate,
-              narration_source: didNarrate ? "llama" : "none",
-              insight_tones: base.map((i) => i.tone).join(","),
-              resolved_decision_count: resolvedCount,
-              total_decision_count: ledger.length,
-            });
-          }
+        if (!cancelled) {
+          trackPendoOnce(dedupeKey, "insights_generated", {
+            insight_count: base.length,
+            narrated: didNarrate,
+            narration_source: didNarrate ? "llama" : "none",
+            insight_tones: base.map((i) => i.tone).join(","),
+            resolved_decision_count: resolvedCount,
+            total_decision_count: ledger.length,
+          });
         }
       }
     })();

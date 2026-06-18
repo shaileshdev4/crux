@@ -72,8 +72,8 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col relative">
-        <PendoInitializer />
         <Providers>
+          <PendoInitializer />
           <Nav />
           <main className="flex-1 relative z-10">{children}</main>
           <footer className="relative z-10 border-t border-border mt-20">
