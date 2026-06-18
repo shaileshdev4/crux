@@ -15,6 +15,7 @@ import { EmptyState, PageHeader } from "@/components/PageHeader";
 import { IconSlot, iconSm } from "@/components/IconSlot";
 import { OutcomePill, ProvDot, StanceBadge } from "@/components/primitives";
 import { Decision, Outcome } from "@/lib/types";
+import { trackPendo } from "@/lib/pendo";
 import { HiCheck, HiMinus, HiXMark } from "react-icons/hi2";
 
 export default function LedgerPage() {
@@ -70,7 +71,18 @@ export default function LedgerPage() {
               readOnly={readOnly}
               showSampleBadge={viewMode !== "mine"}
               onToggle={() => setOpenId(openId === d.id ? null : d.id)}
-              onResolve={(outcome) => resolve(d.id, outcome)}
+              onResolve={(outcome) => {
+                resolve(d.id, outcome);
+                trackPendo("decision_resolved", {
+                  outcome,
+                  category: d.category,
+                  ai_stance: d.aiStance,
+                  confidence: d.confidence,
+                  days_since_committed: Math.floor(
+                    (Date.now() - new Date(d.committedAt).getTime()) / 86_400_000,
+                  ),
+                });
+              }}
             />
           ))}
         </ul>
