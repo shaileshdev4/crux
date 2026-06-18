@@ -10,6 +10,7 @@ import {
 } from "react-icons/hi2";
 import { Decision } from "@/lib/types";
 import { aiAgreement, byCategory, calibrationCurve } from "@/lib/analysis";
+import { trackPendoOnce } from "@/lib/pendo";
 import { IconSlot, iconSm } from "@/components/IconSlot";
 
 interface Insight {
@@ -35,7 +36,11 @@ export function InsightCards({ ledger }: { ledger: Decision[] }) {
     setInsights(base);
     setNarrated(false);
 
+    const resolvedCount = ledger.filter((d) => d.outcome !== null).length;
+    const dedupeKey = `insights-${ledger.length}-${resolvedCount}`;
+
     let cancelled = false;
+    let didNarrate = false;
     (async () => {
       try {
         const res = await fetch("/api/narrate", {
@@ -52,9 +57,21 @@ export function InsightCards({ ledger }: { ledger: Decision[] }) {
         ) {
           setInsights(data.insights);
           setNarrated(true);
+          didNarrate = true;
         }
       } catch {
         /* keep computed fallback */
+      } finally {
+        if (!cancelled) {
+          trackPendoOnce(dedupeKey, "insights_generated", {
+            insight_count: base.length,
+            narrated: didNarrate,
+            narration_source: didNarrate ? "llama" : "none",
+            insight_tones: base.map((i) => i.tone).join(","),
+            resolved_decision_count: resolvedCount,
+            total_decision_count: ledger.length,
+          });
+        }
       }
     })();
     return () => {
