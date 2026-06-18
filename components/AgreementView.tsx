@@ -2,6 +2,12 @@
 
 import { Decision } from "@/lib/types";
 import { aiAgreement, overridesByCategory } from "@/lib/analysis";
+import {
+  HiArrowPath,
+  HiCheck,
+  HiSquares2X2,
+} from "react-icons/hi2";
+import { IconSlot, iconSm } from "@/components/IconSlot";
 
 export function AgreementView({ ledger }: { ledger: Decision[] }) {
   const ag = aiAgreement(ledger);
@@ -12,7 +18,10 @@ export function AgreementView({ ledger }: { ledger: Decision[] }) {
   return (
     <div className="grid lg:grid-cols-2 gap-6">
       <div className="panel p-6">
-        <h3 className="font-display text-xl text-ink mb-6">AI agreement</h3>
+        <h3 className="font-display text-xl text-ink mb-6 flex items-center gap-2">
+          <IconSlot icon={HiCheck} className="h-5 w-5 text-teal" />
+          AI agreement
+        </h3>
         <div className="space-y-5">
           <Bar
             label="Followed AI"
@@ -30,10 +39,12 @@ export function AgreementView({ ledger }: { ledger: Decision[] }) {
       </div>
 
       <div className="panel p-6">
-        <h3 className="font-display text-xl text-ink mb-2">
+        <h3 className="font-display text-xl text-ink mb-2 flex items-center gap-2">
+          <IconSlot icon={HiSquares2X2} className="h-5 w-5 text-teal" />
           Overrides by domain
         </h3>
-        <p className="text-sm text-ink-2 mb-5">
+        <p className="text-sm text-ink-2 mb-5 flex items-start gap-1.5">
+          <IconSlot icon={HiArrowPath} className={`${iconSm} shrink-0 mt-0.5 text-clay`} />
           Where your judgment actually adds value — overrides only.
         </p>
         <div className="space-y-4">

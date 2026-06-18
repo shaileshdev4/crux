@@ -2,14 +2,20 @@
 
 import { Decision } from "@/lib/types";
 import { calibrationCurve } from "@/lib/analysis";
+import { HiAdjustmentsHorizontal, HiChartBarSquare } from "react-icons/hi2";
+import { IconSlot } from "@/components/IconSlot";
 
 export function CalibrationChart({ ledger }: { ledger: Decision[] }) {
   const buckets = calibrationCurve(ledger).filter((b) => b.count > 0);
 
   return (
     <div className="panel p-6">
-      <h3 className="font-display text-xl text-ink mb-2">Calibration</h3>
-      <p className="text-sm text-ink-2 mb-6">
+      <h3 className="font-display text-xl text-ink mb-2 flex items-center gap-2">
+        <IconSlot icon={HiAdjustmentsHorizontal} className="h-5 w-5 text-teal" />
+        Calibration
+      </h3>
+      <p className="text-sm text-ink-2 mb-6 flex items-start gap-1.5">
+        <IconSlot icon={HiChartBarSquare} className="h-4 w-4 shrink-0 mt-0.5 text-ink-3" />
         Stated confidence vs. how things actually went.
       </p>
       {buckets.length === 0 ? (
