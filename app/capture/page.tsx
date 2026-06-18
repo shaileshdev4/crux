@@ -2,7 +2,21 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  HiArrowLeft,
+  HiArrowRight,
+  HiBookmark,
+  HiChatBubbleLeftRight,
+  HiCheck,
+  HiCpuChip,
+  HiDocumentText,
+  HiExclamationTriangle,
+  HiPencilSquare,
+  HiSparkles,
+} from "react-icons/hi2";
 import { useLedger } from "@/components/LedgerStore";
+import { IconSlot, iconSm } from "@/components/IconSlot";
+import { PageHeader } from "@/components/PageHeader";
 import { EXAMPLE_CONVERSATIONS } from "@/lib/seed";
 import { AiStance, ExtractedDraft } from "@/lib/types";
 import { Field, ProvDot, StanceBadge } from "@/components/primitives";
@@ -11,7 +25,7 @@ type Phase = "input" | "extracting" | "confirm";
 
 export default function CapturePage() {
   const router = useRouter();
-  const { commit } = useLedger();
+  const { commit, readOnly } = useLedger();
 
   const [phase, setPhase] = useState<Phase>("input");
   const [text, setText] = useState("");
@@ -52,7 +66,7 @@ export default function CapturePage() {
   }
 
   function handleCommit() {
-    if (!draft) return;
+    if (!draft || readOnly) return;
     const revisitAt = new Date(
       Date.now() + revisitDays * 86_400_000,
     ).toISOString();
@@ -73,14 +87,22 @@ export default function CapturePage() {
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
-      <p className="eyebrow text-teal mb-2">Capture</p>
-      <h1 className="font-display text-3xl text-ink mb-2">
-        Structure a decision
-      </h1>
-      <p className="text-ink-2 text-sm mb-8">
-        Paste the AI conversation. Crux pulls out the question, options, and
-        whether you overrode it. Try an example below.
-      </p>
+      <PageHeader
+        icon={HiPencilSquare}
+        eyebrow="Capture"
+        title="Structure a decision"
+        description="Paste the AI conversation. Crux pulls out the question, options, and whether you overrode it. Try an example below."
+      />
+
+      {readOnly && (
+        <p className="text-sm text-clay mb-6 panel px-4 py-3 flex items-start gap-2">
+          <IconSlot icon={HiExclamationTriangle} className={`${iconSm} shrink-0 mt-0.5`} />
+          <span>
+            Demo ledger is read-only. Open your account menu → <strong>My ledger</strong> to
+            capture your own decisions.
+          </span>
+        </p>
+      )}
 
       {phase === "input" && (
         <>
@@ -90,8 +112,9 @@ export default function CapturePage() {
                 key={ex.title}
                 type="button"
                 onClick={() => setText(ex.text)}
-                className="text-xs px-3 py-1.5 rounded-full border border-border text-ink-2 hover:text-ink hover:border-teal/40 transition-colors"
+                className="text-xs px-3 py-1.5 rounded-full border border-border text-ink-2 hover:text-ink hover:border-teal/40 transition-colors inline-flex items-center gap-1.5"
               >
+                <IconSlot icon={HiDocumentText} className="h-3.5 w-3.5" />
                 {ex.title}
               </button>
             ))}
@@ -106,8 +129,10 @@ export default function CapturePage() {
           <button
             type="button"
             onClick={runExtract}
-            className="btn-primary mt-6"
+            className="btn-primary mt-6 gap-2"
+            disabled={readOnly}
           >
+            <IconSlot icon={HiSparkles} className={iconSm} />
             Structure this decision
           </button>
         </>
@@ -116,7 +141,10 @@ export default function CapturePage() {
       {phase === "extracting" && (
         <div className="panel p-12 text-center">
           <div className="w-12 h-12 mx-auto mb-4 rounded-full border-2 border-teal border-t-transparent animate-spin" />
-          <p className="text-ink-2 scan-line">Reading the thread…</p>
+          <p className="text-ink-2 scan-line flex items-center justify-center gap-2">
+            <IconSlot icon={HiChatBubbleLeftRight} className={iconSm} />
+            Reading the thread…
+          </p>
         </div>
       )}
 
@@ -193,9 +221,17 @@ function ConfirmPanel({
               <span className={o.chosen ? "text-ink font-medium" : ""}>
                 {o.label}
               </span>
-              {o.chosen && <span className="text-xs text-teal">chosen</span>}
+              {o.chosen && (
+                <span className="text-xs text-teal inline-flex items-center gap-0.5">
+                  <IconSlot icon={HiCheck} className="h-3 w-3" />
+                  chosen
+                </span>
+              )}
               {o.aiRecommended && (
-                <span className="text-xs text-ink-3">AI rec</span>
+                <span className="text-xs text-ink-3 inline-flex items-center gap-0.5">
+                  <IconSlot icon={HiCpuChip} className="h-3 w-3" />
+                  AI rec
+                </span>
               )}
             </li>
           ))}
@@ -267,20 +303,24 @@ function ConfirmPanel({
         <button
           type="button"
           onClick={onBack}
-          className="text-sm text-ink-2 hover:text-ink"
+          className="text-sm text-ink-2 hover:text-ink inline-flex items-center gap-1.5"
         >
-          ← Start over
+          <IconSlot icon={HiArrowLeft} className={iconSm} />
+          Start over
         </button>
         <div className="flex items-center gap-4">
           {source && (
-            <span className="eyebrow">
+            <span className="eyebrow inline-flex items-center gap-1">
+              <IconSlot icon={HiCpuChip} className="h-3.5 w-3.5" />
               {source.startsWith("llama")
                 ? `Parsed by ${source}`
                 : "Parsed locally"}
             </span>
           )}
-          <button type="button" onClick={onCommit} className="btn-primary">
-            Commit to ledger →
+          <button type="button" onClick={onCommit} className="btn-primary gap-2">
+            <IconSlot icon={HiBookmark} className={iconSm} />
+            Commit to ledger
+            <IconSlot icon={HiArrowRight} className={iconSm} />
           </button>
         </div>
       </div>

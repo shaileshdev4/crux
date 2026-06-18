@@ -1,33 +1,80 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import {
+  HiCalendar,
+  HiChevronDown,
+  HiChevronUp,
+  HiClipboardDocumentList,
+  HiPencilSquare,
+  HiTag,
+} from "react-icons/hi2";
 import { useLedger } from "@/components/LedgerStore";
+import { EmptyState, PageHeader } from "@/components/PageHeader";
+import { IconSlot, iconSm } from "@/components/IconSlot";
 import { OutcomePill, ProvDot, StanceBadge } from "@/components/primitives";
 import { Decision, Outcome } from "@/lib/types";
+import { HiCheck, HiMinus, HiXMark } from "react-icons/hi2";
 
 export default function LedgerPage() {
-  const { ledger, resolve } = useLedger();
+  const { ledger, resolve, readOnly, viewMode, authReady } = useLedger();
   const [openId, setOpenId] = useState<string | null>(null);
+
+  const subtitle =
+    viewMode === "mine"
+      ? "Your decisions — saved to your account."
+      : viewMode === "sample"
+        ? "Demo ledger — read-only preview."
+        : "Demo ledger for this session. Sign in to persist yours.";
+
+  if (!authReady && viewMode === "mine") {
+    return (
+      <div className="mx-auto max-w-3xl px-6 py-12">
+        <p className="text-sm text-ink-3 flex items-center gap-2">
+          <span className="w-4 h-4 rounded-full border-2 border-teal border-t-transparent animate-spin" />
+          Loading your ledger…
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
-      <p className="eyebrow text-teal mb-2">Ledger</p>
-      <h1 className="font-display text-3xl text-ink mb-2">Committed decisions</h1>
-      <p className="text-sm text-ink-2 mb-8">
-        Append-only record. Sample entries are labeled — yours join for this session.
-      </p>
+      <PageHeader
+        icon={HiClipboardDocumentList}
+        eyebrow="Ledger"
+        title="Committed decisions"
+        description={subtitle}
+      />
 
-      <ul className="space-y-3">
-        {ledger.map((d) => (
-          <LedgerEntry
-            key={d.id}
-            decision={d}
-            open={openId === d.id}
-            onToggle={() => setOpenId(openId === d.id ? null : d.id)}
-            onResolve={(outcome) => resolve(d.id, outcome)}
-          />
-        ))}
-      </ul>
+      {ledger.length === 0 && viewMode === "mine" ? (
+        <EmptyState
+          icon={HiClipboardDocumentList}
+          title="No decisions yet"
+          description="Capture your first decision to start building your calibration mirror."
+          action={
+            <Link href="/capture" className="btn-primary gap-2">
+              <IconSlot icon={HiPencilSquare} className={iconSm} />
+              Capture a decision
+            </Link>
+          }
+        />
+      ) : (
+        <ul className="space-y-3">
+          {ledger.map((d) => (
+            <LedgerEntry
+              key={d.id}
+              decision={d}
+              open={openId === d.id}
+              readOnly={readOnly}
+              showSampleBadge={viewMode !== "mine"}
+              onToggle={() => setOpenId(openId === d.id ? null : d.id)}
+              onResolve={(outcome) => resolve(d.id, outcome)}
+            />
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
@@ -35,11 +82,15 @@ export default function LedgerPage() {
 function LedgerEntry({
   decision: d,
   open,
+  readOnly,
+  showSampleBadge,
   onToggle,
   onResolve,
 }: {
   decision: Decision;
   open: boolean;
+  readOnly: boolean;
+  showSampleBadge: boolean;
   onToggle: () => void;
   onResolve: (o: Outcome) => void;
 }) {
@@ -59,15 +110,27 @@ function LedgerEntry({
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2 mb-1.5">
             <StanceBadge stance={d.aiStance} />
-            {d.isSample && <span className="eyebrow">sample</span>}
+            {showSampleBadge && d.isSample && (
+              <span className="eyebrow inline-flex items-center gap-1">
+                <IconSlot icon={HiTag} className="h-3 w-3" />
+                sample
+              </span>
+            )}
             {d.outcome && <OutcomePill outcome={d.outcome} />}
           </div>
           <p className="text-ink font-medium leading-snug">{d.question}</p>
-          <p className="text-xs text-ink-3 mt-1 font-data">
-            {date} · {d.confidence}% confident · {d.category}
+          <p className="text-xs text-ink-3 mt-1 font-data flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <span className="inline-flex items-center gap-1">
+              <IconSlot icon={HiCalendar} className="h-3 w-3" />
+              {date}
+            </span>
+            <span>· {d.confidence}% confident · {d.category}</span>
           </p>
         </div>
-        <span className="text-ink-3 text-sm">{open ? "▲" : "▼"}</span>
+        <IconSlot
+          icon={open ? HiChevronUp : HiChevronDown}
+          className={`${iconSm} text-ink-3`}
+        />
       </button>
 
       {open && (
@@ -85,17 +148,24 @@ function LedgerEntry({
           )}
           {d.note && <p className="text-sm text-ink-3 italic">{d.note}</p>}
 
-          {!d.outcome && (
+          {!d.outcome && !readOnly && (
             <div>
               <p className="eyebrow mb-2">Close the loop</p>
               <div className="flex flex-wrap gap-2">
-                {(["better", "expected", "worse"] as const).map((o) => (
+                {(
+                  [
+                    { o: "better" as const, icon: HiCheck },
+                    { o: "expected" as const, icon: HiMinus },
+                    { o: "worse" as const, icon: HiXMark },
+                  ] as const
+                ).map(({ o, icon }) => (
                   <button
                     key={o}
                     type="button"
                     onClick={() => onResolve(o)}
-                    className="btn-ghost text-xs capitalize"
+                    className="btn-ghost text-xs capitalize gap-1.5"
                   >
+                    <IconSlot icon={icon} className="h-3.5 w-3.5" />
                     {o}
                   </button>
                 ))}
