@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { DM_Sans, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { HiFingerPrint, HiLockClosed } from "react-icons/hi2";
 import "./globals.css";
 import { Logo } from "@/components/Logo";
+import { IconSlot } from "@/components/IconSlot";
 import { Nav } from "@/components/Nav";
 import { Providers } from "@/components/Providers";
 import { PendoInitializer } from "@/components/PendoInitializer";
@@ -22,7 +24,10 @@ const data = JetBrains_Mono({
   variable: "--font-data",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Crux - the record behind every decision",
   description:
     "AI made deciding cheap. Crux makes it accountable. Capture what the AI recommended, what you chose, and how sure you were - then see your real judgment over time.",
@@ -75,11 +80,13 @@ export default function RootLayout({
             <div className="mx-auto max-w-6xl px-6 py-8 flex flex-wrap items-center justify-between gap-4">
               <div className="flex flex-wrap items-center gap-4">
                 <Logo href="/" wordmarkSize="sm" />
-                <span className="eyebrow hidden sm:inline">
+                <span className="eyebrow hidden sm:inline-flex items-center gap-1.5">
+                  <IconSlot icon={HiFingerPrint} className="h-3.5 w-3.5" />
                   A decision record for the AI era
                 </span>
               </div>
-              <span className="eyebrow">
+              <span className="eyebrow inline-flex items-center gap-1.5">
+                <IconSlot icon={HiLockClosed} className="h-3.5 w-3.5" />
                 Append-only · provenance on every field
               </span>
             </div>

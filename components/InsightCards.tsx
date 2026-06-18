@@ -1,14 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  HiCpuChip,
+  HiExclamationTriangle,
+  HiLightBulb,
+  HiSparkles,
+  HiStar,
+} from "react-icons/hi2";
 import { Decision } from "@/lib/types";
 import { aiAgreement, byCategory, calibrationCurve } from "@/lib/analysis";
+import { IconSlot, iconSm } from "@/components/IconSlot";
 
 interface Insight {
   headline: string;
   detail: string;
   tone: "edge" | "blindspot" | "pattern";
 }
+
+const TONE_ICONS = {
+  edge: HiStar,
+  blindspot: HiExclamationTriangle,
+  pattern: HiLightBulb,
+} as const;
 
 export function InsightCards({ ledger }: { ledger: Decision[] }) {
   const [insights, setInsights] = useState<Insight[]>(() =>
@@ -62,7 +76,8 @@ export function InsightCards({ ledger }: { ledger: Decision[] }) {
           <p className="text-sm text-ink-2 leading-relaxed">{ins.detail}</p>
         </article>
       ))}
-      <p className="col-span-full eyebrow text-center pt-2">
+      <p className="col-span-full eyebrow text-center pt-2 flex items-center justify-center gap-1.5">
+        <IconSlot icon={narrated ? HiCpuChip : HiSparkles} className="h-3.5 w-3.5" />
         {narrated
           ? "Narrated by Llama · grounded in your committed ledger"
           : "Computed from your committed ledger"}
@@ -78,7 +93,13 @@ function ToneMark({ tone }: { tone: Insight["tone"] }) {
     pattern: { label: "Pattern", c: "text-teal" },
   };
   const { label, c } = map[tone];
-  return <span className={`eyebrow ${c}`}>{label}</span>;
+  const Icon = TONE_ICONS[tone];
+  return (
+    <span className={`eyebrow ${c} inline-flex items-center gap-1.5`}>
+      <IconSlot icon={Icon} className={iconSm} />
+      {label}
+    </span>
+  );
 }
 
 function computeInsights(ledger: Decision[]): Insight[] {
