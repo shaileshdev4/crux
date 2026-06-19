@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { useLedger } from "@/components/LedgerStore";
 
 const ANON_VISITOR_KEY = "crux-pendo-visitor";
@@ -17,6 +18,8 @@ function anonId(): string {
 
 export function PendoInitializer() {
   const { user, authReady } = useLedger();
+  const pathname = usePathname();
+  const initialized = useRef(false);
 
   // Initialize Pendo immediately with an anonymous visitor id so page views
   // and feature clicks are captured from the first render — even for
@@ -34,6 +37,11 @@ export function PendoInitializer() {
     if (!authReady || !user?.id || typeof pendo === "undefined") return;
     pendo.identify?.({ visitor: { id: user.id } });
   }, [authReady, user?.id]);
+
+  useEffect(() => {
+    if (!initialized.current || typeof pendo === "undefined") return;
+    pendo.pageLoad();
+  }, [pathname]);
 
   return null;
 }
