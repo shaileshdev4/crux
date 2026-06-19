@@ -34,10 +34,22 @@ export function PendoInitializer() {
 
   // Once auth resolves with a real user, upgrade the visitor identity so the
   // anonymous session is merged with the authenticated visitor record.
+  // Forward email and display name from Supabase (populated by Google OAuth,
+  // magic link, and email/password sign-ins) so Novus analytics can surface
+  // the user by name instead of a raw UUID.
   useEffect(() => {
     if (!authReady || !user?.id || typeof pendo === "undefined") return;
-    pendo.identify?.({ visitor: { id: user.id } });
-  }, [authReady, user?.id]);
+    pendo.identify?.({
+      visitor: {
+        id: user.id,
+        email: user.email ?? undefined,
+        full_name:
+          user.user_metadata?.full_name ??
+          user.user_metadata?.name ??
+          undefined,
+      },
+    });
+  }, [authReady, user?.id, user?.email, user?.user_metadata?.full_name, user?.user_metadata?.name]);
 
   useEffect(() => {
     if (!initialized.current || typeof pendo === "undefined") return;
