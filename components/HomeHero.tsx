@@ -72,23 +72,23 @@ export function HomeHero() {
         <div className="mt-8 flex flex-wrap gap-3">
           {loggedIn ? (
             <>
-              <Link href="/capture" className="btn-primary gap-2">
+              <Link id="cta-capture-loggedin" href="/capture" className="btn-primary gap-2">
                 <IconSlot icon={HiPencilSquare} className={iconSm} />
                 Capture a decision
               </Link>
-              <Link href="/ledger" className="btn-ghost gap-2">
+              <Link id="cta-your-ledger" href="/ledger" className="btn-ghost gap-2">
                 <IconSlot icon={HiClipboardDocumentList} className={iconSm} />
                 Your ledger
               </Link>
             </>
           ) : (
             <>
-              <Link href="/reflect" className="btn-primary gap-2">
+              <Link id="cta-see-mirror" href="/reflect" className="btn-primary gap-2">
                 <IconSlot icon={HiPresentationChartLine} className={iconSm} />
                 See the mirror
                 <IconSlot icon={HiArrowRight} className={iconSm} />
               </Link>
-              <Link href="/capture" className="btn-ghost gap-2">
+              <Link id="cta-capture-decision" href="/capture" className="btn-ghost gap-2">
                 <IconSlot icon={HiPencilSquare} className={iconSm} />
                 Capture a decision
               </Link>

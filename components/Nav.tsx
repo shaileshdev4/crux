@@ -159,11 +159,12 @@ export function Nav() {
             </nav>
 
             <div className="flex items-center gap-2 ml-auto shrink-0">
-              <Link href="/capture" className="btn-primary text-sm py-2 px-3.5 hidden sm:inline-flex gap-2">
+              <Link id="nav-new-entry" href="/capture" className="btn-primary text-sm py-2 px-3.5 hidden sm:inline-flex gap-2">
                 <IconSlot icon={HiPlus} className={iconSm} />
                 New entry
               </Link>
               <Link
+                id="nav-new-entry-mobile"
                 href="/capture"
                 className="btn-primary text-sm py-2 px-3 md:hidden"
                 aria-label="New entry"
