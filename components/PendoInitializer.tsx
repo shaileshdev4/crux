@@ -6,8 +6,7 @@ import { useLedger } from "@/components/LedgerStore";
 
 const ANON_VISITOR_KEY = "crux-pendo-visitor";
 
-function visitorId(userId: string | undefined): string {
-  if (userId) return userId;
+function anonId(): string {
   if (typeof window === "undefined") return "";
   let id = localStorage.getItem(ANON_VISITOR_KEY);
   if (!id) {
@@ -22,15 +21,21 @@ export function PendoInitializer() {
   const pathname = usePathname();
   const initialized = useRef(false);
 
+  // Initialize Pendo immediately with an anonymous visitor id so page views
+  // and feature clicks are captured from the first render — even for
+  // brief-session visitors that leave before Supabase auth resolves.
   useEffect(() => {
-    if (!authReady || typeof pendo === "undefined") return;
-    const id = visitorId(user?.id);
+    if (typeof pendo === "undefined") return;
+    const id = anonId();
     if (!id) return;
-    pendo.initialize({
-      visitor: { id },
-      account: { id: user?.id ? `account-${user.id}` : "anonymous" },
-    });
-    initialized.current = true;
+    pendo.initialize({ visitor: { id } });
+  }, []);
+
+  // Once auth resolves with a real user, upgrade the visitor identity so the
+  // anonymous session is merged with the authenticated visitor record.
+  useEffect(() => {
+    if (!authReady || !user?.id || typeof pendo === "undefined") return;
+    pendo.identify?.({ visitor: { id: user.id } });
   }, [authReady, user?.id]);
 
   useEffect(() => {
