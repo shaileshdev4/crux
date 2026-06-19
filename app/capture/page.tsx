@@ -139,6 +139,7 @@ export default function CapturePage() {
             {EXAMPLE_CONVERSATIONS.map((ex) => (
               <button
                 key={ex.title}
+                id={`btn-example-${ex.title.toLowerCase().replace(/\s+/g, '-')}`}
                 type="button"
                 onClick={() => setText(ex.text)}
                 className="text-xs px-3 py-1.5 rounded-full border border-border text-ink-2 hover:text-ink hover:border-teal/40 transition-colors inline-flex items-center gap-1.5"
@@ -156,6 +157,7 @@ export default function CapturePage() {
             />
           </Field>
           <button
+            id="btn-structure-decision"
             type="button"
             onClick={runExtract}
             className="btn-primary mt-6 gap-2"
@@ -330,6 +332,7 @@ function ConfirmPanel({
 
       <div className="flex items-center justify-between pt-4 border-t border-border">
         <button
+          id="btn-start-over"
           type="button"
           onClick={onBack}
           className="text-sm text-ink-2 hover:text-ink inline-flex items-center gap-1.5"
@@ -346,7 +349,7 @@ function ConfirmPanel({
                 : "Parsed locally"}
             </span>
           )}
-          <button type="button" onClick={onCommit} className="btn-primary gap-2">
+          <button id="btn-commit-to-ledger" type="button" onClick={onCommit} className="btn-primary gap-2">
             <IconSlot icon={HiBookmark} className={iconSm} />
             Commit to ledger
             <IconSlot icon={HiArrowRight} className={iconSm} />

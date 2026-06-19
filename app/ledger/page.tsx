@@ -55,7 +55,7 @@ export default function LedgerPage() {
           title="No decisions yet"
           description="Capture your first decision to start building your calibration mirror."
           action={
-            <Link href="/capture" className="btn-primary gap-2">
+            <Link id="btn-capture-decision" href="/capture" className="btn-primary gap-2">
               <IconSlot icon={HiPencilSquare} className={iconSm} />
               Capture a decision
             </Link>
