@@ -29,6 +29,7 @@ export function PendoInitializer() {
     const id = anonId();
     if (!id) return;
     pendo.initialize({ visitor: { id } });
+    initialized.current = true;
   }, []);
 
   // Once auth resolves with a real user, upgrade the visitor identity so the
