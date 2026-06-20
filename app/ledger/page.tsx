@@ -78,6 +78,7 @@ export default function LedgerPage() {
                   category: d.category,
                   ai_stance: d.aiStance,
                   confidence: d.confidence,
+                  is_sample: d.isSample ?? false,
                   days_since_committed: Math.floor(
                     (Date.now() - new Date(d.committedAt).getTime()) / 86_400_000,
                   ),
